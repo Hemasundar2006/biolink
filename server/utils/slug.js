@@ -1,0 +1,9 @@
+const ALPHANUM = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+export function generatePublicSlug(length = 6) {
+  let out = '';
+  for (let i = 0; i < length; i += 1) {
+    out += ALPHANUM[Math.floor(Math.random() * ALPHANUM.length)];
+  }
+  return out;
+}
