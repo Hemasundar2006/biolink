@@ -45,4 +45,4 @@ userSchema.statics.hashPassword = async function hashPassword(plain) {
   return bcrypt.hash(plain, 12);
 };
 
-export const User = mongoose.model('User', userSchema);
+export const User = mongoose.model('User', userSchema, 'biolink_users');

@@ -8,7 +8,7 @@ const entrySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const SystemConfig = mongoose.model('SystemConfig', entrySchema);
+export const SystemConfig = mongoose.model('SystemConfig', entrySchema, 'biolink_systemconfigs');
 
 export async function getConfigMap() {
   const rows = await SystemConfig.find().lean();

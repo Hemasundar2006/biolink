@@ -48,12 +48,12 @@ export default function Landing() {
             Biolink
           </Link>
           <nav className="flex items-center gap-1 sm:gap-2">
-            <a
-              href="#templates"
+            <Link
+              to="/get-started"
               className="rounded-full px-3 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 sm:px-4"
             >
               Templates
-            </a>
+            </Link>
             <Link
               to="/login"
               className="rounded-full px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:px-4"
@@ -97,12 +97,12 @@ export default function Landing() {
               >
                 Get started
               </Link>
-              <a
-                href="#templates"
+              <Link
+                to="/get-started"
                 className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-5 py-3.5 text-sm font-semibold text-emerald-800 shadow-sm transition hover:bg-emerald-50"
               >
-                View templates
-              </a>
+                View all templates
+              </Link>
             </div>
             <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-emerald-100 pt-10">
               <div>
@@ -191,9 +191,9 @@ export default function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 text-sm text-slate-500 sm:flex-row sm:px-8">
           <span className="font-display font-semibold text-slate-800">Biolink</span>
           <div className="flex flex-wrap justify-center gap-6">
-            <a href="#templates" className="font-medium text-emerald-800 hover:underline">
+            <Link to="/get-started" className="font-medium text-emerald-800 hover:underline">
               Templates
-            </a>
+            </Link>
             <Link to="/login" className="hover:text-slate-900">
               Log in
             </Link>

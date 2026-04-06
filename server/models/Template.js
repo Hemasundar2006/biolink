@@ -24,4 +24,4 @@ const templateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Template = mongoose.model('Template', templateSchema);
+export const Template = mongoose.model('Template', templateSchema, 'biolink_templates');
