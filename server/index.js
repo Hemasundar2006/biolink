@@ -10,9 +10,25 @@ import { publicRouter } from './routes/public.js';
 const app = express();
 const port = Number(process.env.PORT) || 5000;
 
+const allowedOrigins = new Set([
+  'https://biolnk-three.vercel.app',
+  'http://localhost:5173',
+  ...(process.env.CLIENT_URL
+    ? process.env.CLIENT_URL
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean)
+    : []),
+]);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin(origin, callback) {
+      // Allow non-browser tools (e.g. curl, health checks)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.has(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   })
 );

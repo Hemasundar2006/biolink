@@ -1,10 +1,12 @@
 import axios from 'axios'
 
-const rawBase = import.meta.env.VITE_API_BASE
-const baseURL = typeof rawBase === 'string' ? rawBase.replace(/\/$/, '') : ''
+const defaultBase = 'https://biolink-5e35.onrender.com'
+const rawBase = import.meta.env.VITE_API_BASE || defaultBase
+const normalizedBase =
+  typeof rawBase === 'string' ? rawBase.replace(/\/$/, '').replace(/\/api$/, '') : defaultBase
 
 const api = axios.create({
-  baseURL: baseURL ? `${baseURL}/api` : '/api',
+  baseURL: `${normalizedBase}/api`,
   headers: { 'Content-Type': 'application/json' },
 })
 
