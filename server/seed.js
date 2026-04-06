@@ -89,10 +89,11 @@ async function run() {
   }));
   await Template.insertMany(docs);
 
-  const superPass = process.env.SEED_SUPER_PASSWORD || 'SuperAdmin123!';
+  const superEmail = process.env.SEED_SUPER_EMAIL || 'marothihemasundar03@gmail.com';
+  const superPass = process.env.SEED_SUPER_PASSWORD || '1234567890';
   const superHash = await User.hashPassword(superPass);
   await User.create({
-    email: 'admin@biolink.local',
+    email: superEmail,
     passwordHash: superHash,
     role: 'super_admin',
     status: 'approved',
@@ -125,7 +126,7 @@ async function run() {
   await setConfigKey('maintenanceMode', false);
 
   console.log('Seed complete.');
-  console.log(`Super admin: admin@biolink.local / ${superPass}`);
+  console.log(`Super admin: ${superEmail} / ${superPass}`);
   console.log(`Demo creator: creator@biolink.local / ${demoPass} · public /DEMO01`);
   console.log(`Templates: ${docs.length}`);
   await mongoose.disconnect();

@@ -1,6 +1,13 @@
 import { useCallback, useRef, useState } from 'react'
+import { BioTemplate } from '../BioTemplate.jsx'
 
-export function TemplatePickCard({ template, previewUrl, selected, onSelect }) {
+const DEMO_LINKS = [
+  { _id: 'tp1', title: 'Instagram', url: 'https://instagram.com', icon: '📸', status: 'published', order: 0, buttonText: 'Open' },
+  { _id: 'tp2', title: 'YouTube', url: 'https://youtube.com', icon: '▶️', status: 'published', order: 1, buttonText: 'Watch' },
+  { _id: 'tp3', title: 'Website', url: 'https://example.com', icon: '🌐', status: 'published', order: 2, buttonText: 'Visit' },
+]
+
+export function TemplatePickCard({ template, selected, onSelect }) {
   const ref = useRef(null)
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 })
 
@@ -15,8 +22,15 @@ export function TemplatePickCard({ template, previewUrl, selected, onSelect }) {
 
   const onLeave = useCallback(() => setTilt({ rx: 0, ry: 0 }), [])
 
-  const p = template.palette || {}
   const price = ((template.priceCents ?? 999) / 100).toFixed(2)
+  const previewData = {
+    slug: 'preview',
+    displayName: 'Nani Creator',
+    bio: 'Preview the exact template design before choosing.',
+    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=320&h=320&fit=crop&q=80',
+    links: DEMO_LINKS,
+    template,
+  }
 
   return (
     <button
@@ -40,20 +54,11 @@ export function TemplatePickCard({ template, previewUrl, selected, onSelect }) {
             : 'border-emerald-100 hover:border-emerald-300 hover:shadow-[0_24px_56px_-12px_rgba(5,150,105,0.2)]'
         }`}
       >
-        <div className="relative aspect-[4/5] w-full overflow-hidden">
-          <img
-            src={previewUrl}
-            alt=""
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
-          <div
-            className="absolute inset-0 opacity-40 mix-blend-multiply"
-            style={{
-              background: `linear-gradient(135deg, ${p.primary || '#10b981'}, ${p.secondary || '#14b8a6'})`,
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-white/20" />
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-950">
+          <div className="pointer-events-none absolute inset-0 scale-[0.82] origin-top rounded-xl shadow-xl transition duration-500 group-hover:scale-[0.86]">
+            <BioTemplate data={previewData} preview />
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-900/80 to-transparent" />
           {selected ? (
             <span className="absolute right-3 top-3 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-bold text-white shadow-md">
               Selected

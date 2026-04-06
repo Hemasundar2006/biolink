@@ -8,8 +8,11 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
-        changeOrigin: true,
+        '/api': {
+          target: 'https://biolink-5e35.onrender.com/api',
+          changeOrigin: true,
+        },
       },
     },
   },
-})
+});

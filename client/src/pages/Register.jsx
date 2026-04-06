@@ -1,8 +1,13 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import api from '../lib/api.js'
 import { MarketingBackground } from '../components/marketing/MarketingBackground.jsx'
-import { clearCreatorFlow, readCreatorFlow } from '../lib/creatorFlow.js'
+import {
+  clearCreatorFlow,
+  readCheckoutUtrBackup,
+  readCreatorFlow,
+  writeCreatorFlow,
+} from '../lib/creatorFlow.js'
 
 function errMessage(err, fallback) {
   const msg = err?.response?.data?.message
@@ -10,23 +15,59 @@ function errMessage(err, fallback) {
 }
 
 export default function Register() {
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const [flow] = useState(() => readCreatorFlow())
+  const [flow, setFlow] = useState(() => readCreatorFlow())
+  const [utrInput, setUtrInput] = useState(() => String(readCreatorFlow()?.utrNumber || '').trim())
 
-  const needsCheckout =
-    flow?.templateId && !flow?.checkoutPaid
+  const needsCheckout = flow?.templateId && !flow?.checkoutPaid
+
+  useEffect(() => {
+    const navUtr = location.state?.utrFromCheckout || location.state?.utrNumber
+    if (navUtr && String(navUtr).trim().length >= 8) {
+      const v = String(navUtr).trim()
+      const cur = readCreatorFlow() || {}
+      writeCreatorFlow({
+        ...cur,
+        utrNumber: v,
+        checkoutPaid: true,
+        checkoutAt: location.state?.checkoutAt || cur.checkoutAt,
+      })
+    }
+    const f = readCreatorFlow()
+    setFlow(f)
+    setUtrInput(String(f?.utrNumber || readCheckoutUtrBackup() || '').trim())
+  }, [location.state, location.key])
+
+  function handleUtrChange(e) {
+    const v = e.target.value.replace(/\s+/g, '')
+    setUtrInput(v)
+    const f = readCreatorFlow()
+    if (f?.templateId && f?.checkoutPaid) {
+      writeCreatorFlow({ utrNumber: v })
+    }
+  }
 
   async function onSubmit(e) {
     e.preventDefault()
     setError('')
     setMessage('')
-    if (needsCheckout) {
+    const latestFlow = readCreatorFlow()
+    setFlow(latestFlow)
+    const utr = String(
+      utrInput || latestFlow?.utrNumber || readCheckoutUtrBackup() || location.state?.utrFromCheckout || '',
+    ).trim()
+    if (latestFlow?.templateId && !latestFlow?.checkoutPaid) {
       setError('Finish checkout first so we can attach your template.')
+      return
+    }
+    if (latestFlow?.templateId && latestFlow?.checkoutPaid && utr.length < 8) {
+      setError('Enter your payment UTR (at least 8 characters). It is required for admin verification.')
       return
     }
     setBusy(true)
@@ -36,9 +77,11 @@ export default function Register() {
         password,
         displayName,
       }
-      if (flow?.templateId && flow?.checkoutPaid) {
-        payload.templateId = flow.templateId
+      if (latestFlow?.templateId && latestFlow?.checkoutPaid) {
+        payload.templateId = String(latestFlow.templateId).trim()
         payload.checkoutCompleted = true
+        payload.utrNumber = utr
+        payload.checkoutAt = latestFlow.checkoutAt || ''
       }
       const { data } = await api.post('/auth/register', payload)
       clearCreatorFlow()
@@ -82,6 +125,21 @@ export default function Register() {
                     Complete checkout to lock in this template, then return here.
                   </p>
                 )}
+                {flow.checkoutPaid ? (
+                  <div className="mt-3 space-y-1">
+                    <label className="block text-xs font-semibold text-emerald-900">Payment UTR (from checkout)</label>
+                    <input
+                      value={utrInput}
+                      onChange={handleUtrChange}
+                      placeholder="From checkout"
+                      autoComplete="off"
+                      className="w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+                    />
+                    <p className="text-[11px] text-emerald-800/80">
+                      Pre-filled from checkout and sent with your application (you can correct it here if needed).
+                    </p>
+                  </div>
+                ) : null}
                 {!flow.checkoutPaid ? (
                   <Link
                     to="/checkout"

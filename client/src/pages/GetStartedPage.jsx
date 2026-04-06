@@ -6,17 +6,6 @@ import { MarketingBackground } from '../components/marketing/MarketingBackground
 import { TemplatePickCard } from '../components/marketing/TemplatePickCard.jsx'
 import { clearCreatorFlow, writeCreatorFlow } from '../lib/creatorFlow.js'
 
-const PREVIEW_IMAGES = [
-  'https://images.unsplash.com/photo-1557683316-973673baf926?w=520&h=650&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=520&h=650&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=520&h=650&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=520&h=650&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=520&h=650&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=520&h=650&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=520&h=650&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=520&h=650&fit=crop&q=80',
-]
-
 export default function GetStartedPage() {
   const nav = useNavigate()
   const { user, loading: authLoading } = useAuth()
@@ -52,6 +41,7 @@ export default function GetStartedPage() {
         checkoutPaid: false,
       })
     }
+    nav(`/get-started/preview/${tpl._id}`)
   }
 
   async function applyAsCreator() {
@@ -108,8 +98,8 @@ export default function GetStartedPage() {
             Pick your 3D template
           </h1>
           <p className="mt-4 text-lg text-slate-600">
-            Explore the library in depth. Select the design you love — then continue to checkout to secure it, or apply
-            instantly if you already have an account.
+            Explore the library in depth. Click any template card to open a full preview page, then continue to checkout
+            or apply instantly if you already have an account.
           </p>
         </div>
 
@@ -129,11 +119,10 @@ export default function GetStartedPage() {
             <p className="text-center text-slate-500">Loading templates…</p>
           ) : (
             <div className="grid grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {templates.map((tpl, i) => (
+              {templates.map((tpl) => (
                 <TemplatePickCard
                   key={tpl._id}
                   template={tpl}
-                  previewUrl={PREVIEW_IMAGES[i % PREVIEW_IMAGES.length]}
                   selected={selected?._id === tpl._id}
                   onSelect={handleSelect}
                 />

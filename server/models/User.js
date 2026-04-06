@@ -22,11 +22,23 @@ const userSchema = new mongoose.Schema(
       default: 'pending',
     },
     publicSlug: { type: String, unique: true, sparse: true },
+    creatorId: { type: String, unique: true, sparse: true },
     displayName: { type: String, default: '' },
     bio: { type: String, default: '' },
     avatarUrl: { type: String, default: '' },
     links: [linkSchema],
     selectedTemplate: { type: mongoose.Schema.Types.ObjectId, ref: 'Template', default: null },
+    /** Denormalized copy of payment UTR (same as invoice.utrNumber) for reliable admin list / queries */
+    paymentUtr: { type: String, default: '', trim: true },
+    invoice: {
+      invoiceNumber: { type: String, default: '' },
+      templateName: { type: String, default: '' },
+      amountCents: { type: Number, default: 0 },
+      utrNumber: { type: String, default: '' },
+      issuedAt: { type: Date },
+      checkoutCompleted: { type: Boolean, default: false },
+      paymentVerified: { type: Boolean, default: false },
+    },
     subscription: {
       active: { type: Boolean, default: false },
       planName: { type: String, default: '' },
